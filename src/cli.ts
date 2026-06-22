@@ -1,12 +1,14 @@
 #!/usr/bin/env node
-import { CONFIG_FILE, diffText, initConfig, pull, push, resolveScope, status } from "./index.js";
+import { CONFIG_FILE, diffText, initConfig, installHook, pull, push, resolveScope, status, uninstallHook } from "./index.js";
 
 type ParsedArgs = {
   command?: string;
+  subcommand?: string;
   project?: string;
   files: string[];
   force: boolean;
   help: boolean;
+  bin?: string;
 };
 
 async function main(argv: string[]): Promise<number> {
@@ -22,6 +24,21 @@ async function main(argv: string[]): Promise<number> {
     console.log(`project: ${result.config.project}`);
     console.log(`files: ${result.config.files.join(", ")}`);
     return 0;
+  }
+
+  if (args.command === "hook") {
+    if (args.subcommand === "install") {
+      const project = requireArg(args.project, "hook install requires a project");
+      const result = await installHook({ cwd: process.cwd(), project, bin: args.bin });
+      console.log(`installed post-checkout hook: ${result.path}`);
+      return 0;
+    }
+    if (args.subcommand === "uninstall") {
+      const result = await uninstallHook(process.cwd());
+      console.log(`uninstalled post-checkout hook: ${result.path}`);
+      return 0;
+    }
+    throw new Error("usage: env-sync hook install <project> | env-sync hook uninstall");
   }
 
   const scope = await resolveScope({ cwd: process.cwd(), project: args.project, files: args.files });
@@ -77,11 +94,27 @@ function parseArgs(argv: string[]): ParsedArgs {
       index += 1;
       continue;
     }
+    if (arg === "--bin") {
+      if (parsed.command !== "hook") {
+        throw new Error("--bin is only supported by env-sync hook install");
+      }
+      const bin = argv[index + 1];
+      if (!bin) {
+        throw new Error("--bin requires a path");
+      }
+      parsed.bin = bin;
+      index += 1;
+      continue;
+    }
     if (arg.startsWith("-")) {
       throw new Error(`unknown option: ${arg}`);
     }
     if (!parsed.command) {
       parsed.command = arg;
+      continue;
+    }
+    if (parsed.command === "hook" && !parsed.subcommand) {
+      parsed.subcommand = arg;
       continue;
     }
     if (!parsed.project) {
@@ -102,7 +135,16 @@ Usage:
   env-sync pull <project> [--file <path>...] [--force]
   env-sync status [project] [--file <path>...]
   env-sync diff [project] [--file <path>...]
+  env-sync hook install <project>
+  env-sync hook uninstall
 `);
+}
+
+function requireArg(value: string | undefined, message: string): string {
+  if (!value) {
+    throw new Error(message);
+  }
+  return value;
 }
 
 function indent(text: string): string {

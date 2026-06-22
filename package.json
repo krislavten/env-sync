@@ -1,0 +1,43 @@
+{
+  "name": "env-sync",
+  "version": "0.1.0",
+  "description": "A small local CLI for syncing env files across worktrees and projects.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/krislavten/env-sync.git"
+  },
+  "homepage": "https://github.com/krislavten/env-sync#readme",
+  "bugs": {
+    "url": "https://github.com/krislavten/env-sync/issues"
+  },
+  "type": "module",
+  "bin": {
+    "env-sync": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "check": "pnpm build && pnpm test"
+  },
+  "keywords": [
+    "env",
+    "dotenv",
+    "cli",
+    "worktree"
+  ],
+  "author": "krislavten",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

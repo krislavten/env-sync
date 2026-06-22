@@ -1,5 +1,5 @@
 {
-  "name": "env-sync",
+  "name": "@krislavten/env-sync",
   "version": "0.1.0",
   "description": "A small local CLI for syncing env files across worktrees and projects.",
   "repository": {
@@ -12,7 +12,7 @@
   },
   "type": "module",
   "bin": {
-    "env-sync": "./dist/cli.js"
+    "env-sync": "dist/cli.js"
   },
   "files": [
     "dist",

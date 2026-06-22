@@ -47,6 +47,12 @@ Requirements:
 - Node.js 20 or newer
 - pnpm 10 or newer
 
+From npm:
+
+```sh
+npm install -g @krislavten/env-sync
+```
+
 From source:
 
 ```sh
